@@ -6,9 +6,10 @@ Viertelstunden zu einer Stunde zusammengefasst und als „external statistics"
 mit fortlaufender Summe geschrieben. Im Energie-Dashboard und in der
 Statistik-Karte stehen sie dann wie jeder andere Zähler zur Verfügung.
 
-Die EDA-Daten kommen verzögert und werden manchmal nachträglich korrigiert.
-Darum werden bei jedem Lauf die letzten zwei Wochen erneut geladen und die
-Summe ab dem Stand davor neu aufgebaut.
+Die Messwerte kommen vom Netzbetreiber mit 10 bis 15 Tagen Verzögerung, bis
+dahin liefert die API für diese Tage Nullen. Darum werden bei jedem Lauf die
+letzten 30 Tage erneut geladen und die Summe ab dem Stand davor neu aufgebaut.
+Welcher Tag zuletzt echte Werte hatte, merkt sich der Importer gesondert.
 """
 
 from __future__ import annotations
@@ -51,7 +52,7 @@ METRICS: list[tuple[str, str, str]] = [
 ]
 
 BACKFILL_DAYS = 365      # so weit holt der erste Lauf höchstens zurück
-REFETCH_DAYS = 14        # so viele Tage werden bei jedem Lauf neu geladen
+REFETCH_DAYS = 30        # so viele Tage werden bei jedem Lauf neu geladen
 REQUEST_PAUSE = 0.5      # Sekunden zwischen zwei Tagesabfragen (schont die API)
 
 STORE_VERSION = 1
@@ -74,6 +75,10 @@ def hourly_values(buckets: list[dict[str, Any]]) -> dict[datetime, dict[str, flo
     return hours
 
 
+def _has_values(buckets: list[dict[str, Any]]) -> bool:
+    return any(float(b.get(field) or 0.0) for b in buckets for _, field, _ in METRICS)
+
+
 def _parse_day(value: Any) -> date | None:
     if not value:
         return None
@@ -94,7 +99,8 @@ class StatisticsImporter:
         self.member_id = member_id
         self._store: Store[dict[str, Any]] = Store(hass, STORE_VERSION, f"{DOMAIN}.{entry_id}")
         self._lock = asyncio.Lock()
-        self.last_day: date | None = None
+        self.last_day: date | None = None       # letzter geladener Tag
+        self.last_data_day: date | None = None  # letzter Tag mit echten Werten
         self.running = False
 
     @property
@@ -104,6 +110,7 @@ class StatisticsImporter:
     async def async_load(self) -> None:
         data = await self._store.async_load() or {}
         self.last_day = _parse_day(data.get("last_day"))
+        self.last_data_day = _parse_day(data.get("last_data_day"))
 
     async def async_remove_store(self) -> None:
         await self._store.async_remove()
@@ -146,10 +153,18 @@ class StatisticsImporter:
             except GruenLichtError as err:
                 _LOGGER.warning("Viertelstundenwerte für %s nicht geladen: %s", day, err)
                 break
-            self._write_day(data.get("buckets") or [], sums)
+            buckets = data.get("buckets") or []
+            self._write_day(buckets, sums)
             self.last_day = day
+            if _has_values(buckets) and (self.last_data_day is None or day > self.last_data_day):
+                self.last_data_day = day
             days += 1
-            await self._store.async_save({"last_day": day.isoformat()})
+            await self._store.async_save(
+                {
+                    "last_day": day.isoformat(),
+                    "last_data_day": self.last_data_day.isoformat() if self.last_data_day else None,
+                }
+            )
             day += timedelta(days=1)
             if day <= end:
                 await asyncio.sleep(REQUEST_PAUSE)

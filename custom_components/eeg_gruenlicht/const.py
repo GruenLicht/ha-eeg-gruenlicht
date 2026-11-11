@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 DOMAIN = "eeg_gruenlicht"
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 
 DEFAULT_BASE_URL = "https://api.eeg-gruenlicht.at/api"
 PORTAL_URL = "https://abrechnung.eeg-gruenlicht.at"
@@ -19,7 +19,7 @@ CONF_MEMBER_ID = "member_id"
 
 # Option: Viertelstundenwerte als Langzeitstatistik importieren (Stufe 2).
 CONF_IMPORT_ENERGY = "import_energy"
-IMPORT_INTERVAL = timedelta(hours=6)
+IMPORT_INTERVAL = timedelta(hours=12)
 
 # /api/me wird alle 30 Minuten abgefragt. Das hält die Sitzung aktiv
 # (Leerlauf-Ablauf serverseitig 30 Tage) und zeigt der EEG „zuletzt aktiv".

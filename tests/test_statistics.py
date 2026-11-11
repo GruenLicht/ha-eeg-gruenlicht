@@ -48,13 +48,18 @@ def test_dst_day_has_25_hours() -> None:
 
 async def test_import_backfills_and_is_idempotent(hass: HomeAssistant, aioclient_mock) -> None:
     today = dt_util.now(VIENNA).date()
-    d1, d2 = today - timedelta(days=2), today - timedelta(days=1)
-    coverage = {"firstDataAt": d1.isoformat(), "lastDataAt": d2.isoformat()}
+    d1, d2, d3 = (today - timedelta(days=n) for n in (3, 2, 1))
+    coverage = {"firstDataAt": d1.isoformat(), "lastDataAt": d3.isoformat()}
     for day in (d1, d2):
         aioclient_mock.get(
             f"{BASE}/energy?granularity=day&date={day.isoformat()}",
             json={"buckets": _day_buckets(day), "coverage": coverage},
         )
+    # Tag ohne Messwerte vom Netzbetreiber: die API liefert Nullen.
+    aioclient_mock.get(
+        f"{BASE}/energy?granularity=day&date={d3.isoformat()}",
+        json={"buckets": _day_buckets(d3, consumption=0.0, from_eeg=0.0), "coverage": coverage},
+    )
     aioclient_mock.get(f"{BASE}/energy", json={"buckets": [], "coverage": coverage})
     aioclient_mock.get(f"{BASE}/me", json=MEMBER)
 
@@ -85,16 +90,17 @@ async def test_import_backfills_and_is_idempotent(hass: HomeAssistant, aioclient
         return stats[sid]
 
     rows = await _last_sum()
-    assert len(rows) == 48
+    assert len(rows) == 72
     assert abs(rows[0]["state"] - 0.4) < 1e-6
     assert abs(rows[-1]["sum"] - 9.6 * 2) < 1e-6
 
     state = hass.states.get("sensor.eeg_grunlicht_quarter_hour_values_until")
-    assert state.state == d2.isoformat()
+    assert state.state == d2.isoformat()  # letzter Tag mit echten Werten
+    assert state.attributes["last_loaded_day"] == d3.isoformat()
 
     # Zweiter Lauf lädt das Überlappungsfenster neu, zählt aber nichts doppelt.
     await entry.runtime_data.importer.async_run()
     await async_wait_recording_done(hass)
     rows = await _last_sum()
-    assert len(rows) == 48
+    assert len(rows) == 72
     assert abs(rows[-1]["sum"] - 19.2) < 1e-6

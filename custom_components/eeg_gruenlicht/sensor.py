@@ -80,7 +80,7 @@ class LastSyncSensor(GruenLichtEntity, SensorEntity):
 
 
 class ImportedUntilSensor(GruenLichtEntity, SensorEntity):
-    """Letzter Tag, dessen Viertelstundenwerte in der Statistik stehen (Stufe 2)."""
+    """Letzter Tag mit echten Viertelstundenwerten in der Statistik (Stufe 2)."""
 
     _attr_device_class = SensorDeviceClass.DATE
     _attr_entity_category = EntityCategory.DIAGNOSTIC
@@ -91,11 +91,15 @@ class ImportedUntilSensor(GruenLichtEntity, SensorEntity):
     @property
     def native_value(self) -> date | None:
         importer = self.coordinator.importer
-        return importer.last_day if importer else None
+        return importer.last_data_day if importer else None
 
     @property
     def extra_state_attributes(self) -> dict:
         importer = self.coordinator.importer
         if not importer:
             return {}
-        return {"statistic_ids": list(importer.ids.values()), "import_running": importer.running}
+        return {
+            "statistic_ids": list(importer.ids.values()),
+            "last_loaded_day": importer.last_day.isoformat() if importer.last_day else None,
+            "import_running": importer.running,
+        }

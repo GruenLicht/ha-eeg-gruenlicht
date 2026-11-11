@@ -46,7 +46,7 @@ Kopiere den Ordner `custom_components/eeg_gruenlicht` aus diesem Repository nach
 4. Home Assistant zeigt einen 6-stelligen Code. Im Portal erscheint gleichzeitig eine Anfrage von „Home Assistant“. Wenn dort derselbe Code steht, bestätige sie. Dafür hast du 2 Minuten.
 5. Fertig: Es erscheint das Gerät **EEG GrünLicht** mit deinen Daten.
 
-Die Viertelstundenwerte werden danach im Hintergrund geladen. Beim ersten Mal holt die Integration bis zu ein Jahr nach, das dauert einige Minuten. Wie weit sie ist, zeigt der Sensor **Viertelstundenwerte bis**.
+Die Viertelstundenwerte werden danach im Hintergrund geladen. Beim ersten Mal holt die Integration bis zu ein Jahr nach, das dauert einige Minuten. Bis zu welchem Tag echte Werte vorliegen, zeigt der Sensor **Viertelstundenwerte bis**.
 
 ## Viertelstundenwerte im Energie-Dashboard
 
@@ -54,9 +54,9 @@ Die Werte stehen als Statistiken mit dem Namen „EEG GrünLicht …“ zur Verf
 
 Gut zu wissen:
 
-- Die EEG bekommt die Messwerte vom Netzbetreiber erst am Folgetag. Die Statistik reicht deshalb immer nur bis gestern oder vorgestern.
+- Die EEG bekommt die Messwerte vom Netzbetreiber mit einigen Tagen Verzögerung, bei Wiener Netze derzeit etwa 10 bis 15 Tage. Bis dahin stehen für diese Tage Nullen in der Statistik.
+- Die Integration lädt alle 12 Stunden die letzten 30 Tage neu. Verspätete oder korrigierte Werte ersetzen so die Nullen automatisch.
 - Home Assistant speichert Statistik stündlich. Je vier Viertelstunden werden zu einer Stunde zusammengefasst.
-- Die letzten 14 Tage werden bei jedem Lauf neu geladen, weil der Netzbetreiber Werte manchmal verspätet liefert oder nachträglich korrigiert.
 
 ## Freigaben ändern und Verbindung trennen
 
