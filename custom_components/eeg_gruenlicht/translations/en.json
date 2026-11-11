@@ -1,0 +1,76 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to EEG GrünLicht",
+        "description": "Open “App verbinden” in the member portal and enter the 8-character short code shown below the QR code.",
+        "data": {
+          "code": "Short code"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect to EEG GrünLicht",
+        "description": "The connection to the energy community was removed or has expired. Open “App verbinden” in the member portal and enter the new short code.",
+        "data": {
+          "code": "Short code"
+        }
+      }
+    },
+    "progress": {
+      "wait_confirm": "Now confirm the new connection “Home Assistant” in the member portal. The portal must show this code:\n\n**{pairing_code}**\n\nYou have 2 minutes. This window continues on its own."
+    },
+    "error": {
+      "invalid_format": "The short code has 8 characters (letters and digits).",
+      "invalid_code": "Short code invalid or expired. Reload the portal and try again.",
+      "too_many_attempts": "Too many attempts. Please wait a few minutes.",
+      "cannot_connect": "The energy community cannot be reached right now.",
+      "unknown": "Unexpected error, see the log."
+    },
+    "abort": {
+      "already_configured": "This member account is already connected.",
+      "reauth_successful": "The connection has been restored.",
+      "wrong_member": "The short code belongs to a different member account.",
+      "pairing_rejected": "The connection was rejected in the portal.",
+      "pairing_expired": "Time for confirmation ran out. Start the setup again.",
+      "pairing_denied": "The energy community refused the connection. Start the setup again."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Connection"
+      }
+    },
+    "sensor": {
+      "community": {
+        "name": "Energy community"
+      },
+      "membership_no": {
+        "name": "Membership number"
+      },
+      "role": {
+        "name": "Role"
+      },
+      "meter_points": {
+        "name": "Meter points"
+      },
+      "last_sync": {
+        "name": "Last synchronised"
+      },
+      "imported_until": {
+        "name": "Quarter-hour values until"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Permissions",
+        "description": "Choose which data flows between the energy community and Home Assistant.",
+        "data": {
+          "import_energy": "Import the community's quarter-hour values into statistics (stage 2)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit der EEG GrünLicht verbinden",
+        "description": "Öffne im Mitgliederportal „App verbinden“ und gib hier den 8-stelligen Kurzcode ein, der unter dem QR-Code steht.",
+        "data": {
+          "code": "Kurzcode"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Neu mit der EEG GrünLicht verbinden",
+        "description": "Die Verbindung zur EEG wurde getrennt oder ist abgelaufen. Öffne im Mitgliederportal „App verbinden“ und gib den neuen Kurzcode ein.",
+        "data": {
+          "code": "Kurzcode"
+        }
+      }
+    },
+    "progress": {
+      "wait_confirm": "Bestätige jetzt im Mitgliederportal die neue Verbindung „Home Assistant“. Dort muss dieser Code angezeigt werden:\n\n**{pairing_code}**\n\nDu hast dafür 2 Minuten Zeit. Dieses Fenster geht von selbst weiter."
+    },
+    "error": {
+      "invalid_format": "Der Kurzcode hat 8 Zeichen (Buchstaben und Ziffern).",
+      "invalid_code": "Kurzcode ungültig oder abgelaufen. Lade im Portal neu und versuch es noch einmal.",
+      "too_many_attempts": "Zu viele Versuche. Bitte warte einige Minuten.",
+      "cannot_connect": "Die EEG ist gerade nicht erreichbar.",
+      "unknown": "Unerwarteter Fehler, Details im Protokoll."
+    },
+    "abort": {
+      "already_configured": "Dieses Mitgliedskonto ist bereits verbunden.",
+      "reauth_successful": "Die Verbindung ist wiederhergestellt.",
+      "wrong_member": "Der Kurzcode gehört zu einem anderen Mitgliedskonto.",
+      "pairing_rejected": "Die Verbindung wurde im Portal abgelehnt.",
+      "pairing_expired": "Die Zeit für die Bestätigung ist abgelaufen. Starte die Einrichtung neu.",
+      "pairing_denied": "Die EEG hat die Verbindung abgelehnt. Starte die Einrichtung neu."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "connection": {
+        "name": "Verbindung"
+      }
+    },
+    "sensor": {
+      "community": {
+        "name": "Energiegemeinschaft"
+      },
+      "membership_no": {
+        "name": "Mitgliedsnummer"
+      },
+      "role": {
+        "name": "Rolle"
+      },
+      "meter_points": {
+        "name": "Zählpunkte"
+      },
+      "last_sync": {
+        "name": "Zuletzt synchronisiert"
+      },
+      "imported_until": {
+        "name": "Viertelstundenwerte bis"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Freigaben",
+        "description": "Lege fest, welche Daten zwischen der EEG und Home Assistant fließen.",
+        "data": {
+          "import_energy": "Viertelstundenwerte der EEG in die Statistik übernehmen (Stufe 2)"
+        }
+      }
+    }
+  }
+}

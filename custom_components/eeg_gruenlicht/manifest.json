@@ -1,0 +1,14 @@
+{
+  "domain": "eeg_gruenlicht",
+  "name": "EEG GrünLicht",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://eeg-gruenlicht.at",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.2.0",
+  "dependencies": [
+    "recorder"
+  ]
+}
