@@ -7,7 +7,7 @@ mit fortlaufender Summe geschrieben. Im Energie-Dashboard und in der
 Statistik-Karte stehen sie dann wie jeder andere Zähler zur Verfügung.
 
 Die EDA-Daten kommen verzögert und werden manchmal nachträglich korrigiert.
-Darum wird bei jedem Lauf ein Fenster von einigen Tagen erneut geladen und die
+Darum werden bei jedem Lauf die letzten zwei Wochen erneut geladen und die
 Summe ab dem Stand davor neu aufgebaut.
 """
 
@@ -51,7 +51,7 @@ METRICS: list[tuple[str, str, str]] = [
 ]
 
 BACKFILL_DAYS = 365      # so weit holt der erste Lauf höchstens zurück
-REFETCH_DAYS = 3         # so viele Tage werden bei jedem Lauf neu geladen
+REFETCH_DAYS = 14        # so viele Tage werden bei jedem Lauf neu geladen
 REQUEST_PAUSE = 0.5      # Sekunden zwischen zwei Tagesabfragen (schont die API)
 
 STORE_VERSION = 1

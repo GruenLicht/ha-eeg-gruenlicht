@@ -1,5 +1,3 @@
-<img src="custom_components/eeg_gruenlicht/brand/icon.png" alt="EEG GrünLicht" width="96" align="right">
-
 # EEG GrünLicht für Home Assistant
 
 Mit dieser Integration verbindest du dein Home Assistant mit deinem Mitgliedskonto bei der Erneuerbare-Energie-Gemeinschaft **EEG Grünes Licht**. Home Assistant zeigt dann deine Mitgliedsdaten an und übernimmt die Viertelstundenwerte der EEG in seine Statistik, zum Beispiel für das Energie-Dashboard.
@@ -25,7 +23,7 @@ Die Teilnahme ist freiwillig. Die Verbindung geht immer von deinem Home Assistan
 ### Über den Marketplace (Home Assistant 2026.11 und neuer)
 
 1. Öffne in Home Assistant den **Marketplace** in der Seitenleiste.
-2. Wähle oben rechts **Add from link** und gib diese Adresse ein: `https://github.com/GruenLicht/ha-eeg-gruenlicht`
+2. Wähle oben rechts **Add from link** und gib diese Adresse ein: `https://github.com/GruenLicht/ha-eeg-gruenlicht`. Beim ersten Mal verbindet Home Assistant den Marketplace mit GitHub: Du bekommst einen Code, gibst ihn auf https://github.com/login/device ein und bestätigst. Dafür brauchst du ein kostenloses GitHub-Konto.
 3. Öffne „EEG GrünLicht“ und klicke **Install**.
 4. Starte Home Assistant neu: **Settings → System → Restart**.
 
@@ -58,7 +56,7 @@ Gut zu wissen:
 
 - Die EEG bekommt die Messwerte vom Netzbetreiber erst am Folgetag. Die Statistik reicht deshalb immer nur bis gestern oder vorgestern.
 - Home Assistant speichert Statistik stündlich. Je vier Viertelstunden werden zu einer Stunde zusammengefasst.
-- Die letzten 3 Tage werden bei jedem Lauf neu geladen, weil der Netzbetreiber Werte manchmal nachträglich korrigiert.
+- Die letzten 14 Tage werden bei jedem Lauf neu geladen, weil der Netzbetreiber Werte manchmal verspätet liefert oder nachträglich korrigiert.
 
 ## Freigaben ändern und Verbindung trennen
 
