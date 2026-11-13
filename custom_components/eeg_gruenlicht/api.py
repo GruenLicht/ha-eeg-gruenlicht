@@ -226,6 +226,34 @@ class GruenLichtClient:
             raise GruenLichtAuthError
         raise GruenLichtConnectionError(f"HTTP {status}")
 
+    async def put_home_profile(self, profile: dict[str, Any]) -> None:
+        """PUT /home-profile — Haushaltsprofil (Stufe 3) ersetzen."""
+        status, _ = await self._request("PUT", "/home-profile", profile)
+        if status in (401, 403):
+            raise GruenLichtAuthError
+        if status not in (200, 201, 204):
+            raise GruenLichtConnectionError(f"HTTP {status}")
+
+    async def delete_home_profile(self) -> None:
+        """DELETE /home-profile — Freigabe entzogen, Profil löschen."""
+        status, _ = await self._request("DELETE", "/home-profile")
+        if status in (401, 403):
+            raise GruenLichtAuthError
+        if status not in (200, 204, 404):
+            raise GruenLichtConnectionError(f"HTTP {status}")
+
+    async def contract_catalog(self) -> dict[str, Any] | None:
+        """GET /contract-catalog — Lieferanten, Abnehmer und Produkte zur Auswahl.
+
+        Optional: Solange die API keinen Katalog anbietet (404) oder nicht
+        erreichbar ist, fragt der Dialog freie Texte ab.
+        """
+        try:
+            status, data = await self._request("GET", "/contract-catalog")
+        except GruenLichtConnectionError:
+            return None
+        return data if status == 200 and isinstance(data, dict) else None
+
     async def logout(self) -> None:
         """DELETE /session — Sitzung sofort widerrufen."""
         status, _ = await self._request("DELETE", "/session")

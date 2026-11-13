@@ -59,6 +59,9 @@
       },
       "imported_until": {
         "name": "Quarter-hour values until"
+      },
+      "profile_reported": {
+        "name": "Household profile reported"
       }
     }
   },
@@ -66,10 +69,66 @@
     "step": {
       "init": {
         "title": "Permissions",
-        "description": "Choose which data flows between the energy community and Home Assistant.",
+        "description": "Choose which data flows between the energy community and Home Assistant. Every permission is voluntary and can be withdrawn at any time.\n\n**Household profile (stage 3):** Purpose: {purpose}. Who may see it: {recipients}. Sent are device type, manufacturer, model, key figures and your supply contract details – no meter readings, no serial numbers. If you switch this off, the community deletes the data.",
         "data": {
-          "import_energy": "Import the community's quarter-hour values into statistics (stage 2)"
+          "import_energy": "Import the community's quarter-hour values into statistics (stage 2)",
+          "report_profile": "Report the household profile to the community (stage 3)"
         }
+      },
+      "devices": {
+        "title": "Devices",
+        "description": "Home Assistant detected {count} energy devices. Choose which ones to report and add what Home Assistant does not know. Empty fields are not sent.",
+        "data": {
+          "devices": "Detected devices",
+          "pv_kwp": "PV system power",
+          "heat_pump_kw": "Heat pump electrical power",
+          "wallbox_kw": "Wallbox charging power",
+          "has_ev": "I have an electric vehicle",
+          "notes": "Other devices or notes"
+        }
+      },
+      "supply": {
+        "title": "Electricity supply",
+        "description": "Who supplies the electricity the community does not cover? This helps the community make suitable offers.",
+        "data": {
+          "supplier": "Electricity supplier",
+          "supply_product": "Product / tariff",
+          "supply_tariff_type": "Tariff type"
+        }
+      },
+      "supply_product": {
+        "title": "Tariff at {company}",
+        "description": "Choose your product or enter it.",
+        "data": {
+          "supply_product": "Product / tariff"
+        }
+      },
+      "feed_in": {
+        "title": "Feed-in",
+        "description": "Who buys the surplus electricity that is not used within the community? Leave empty if you have no generation system.",
+        "data": {
+          "feed_in_buyer": "Buyer",
+          "feed_in_product": "Product / remuneration model",
+          "feed_in_tariff_type": "Remuneration type"
+        }
+      },
+      "feed_in_product": {
+        "title": "Remuneration at {company}",
+        "description": "Choose your product or enter it.",
+        "data": {
+          "feed_in_product": "Product / remuneration model"
+        }
+      }
+    }
+  },
+  "selector": {
+    "tariff_type": {
+      "options": {
+        "fixed": "Fixed price",
+        "indexed": "Floater / indexed",
+        "dynamic": "Dynamic (hourly price)",
+        "other": "Other",
+        "unknown": "I don't know"
       }
     }
   }

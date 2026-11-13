@@ -2,12 +2,13 @@
 
 Stufe 1: Kopplung mit dem Mitgliedskonto, Mitgliedsdaten als Sensoren.
 Stufe 2: Viertelstundenwerte der EEG als Langzeitstatistik (abschaltbar).
+Stufe 3: Haushaltsprofil (Geräte, Lieferverträge) an die EEG — nur nach Freigabe.
 """
 
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
@@ -25,11 +26,14 @@ from .const import (
     IMPORT_INTERVAL,
 )
 from .coordinator import GruenLichtCoordinator
+from .profile import ProfileReporter
 from .statistics import StatisticsImporter
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
+
+PROFILE_INTERVAL = timedelta(hours=24)
 
 type GruenLichtConfigEntry = ConfigEntry[GruenLichtCoordinator]
 
@@ -58,8 +62,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: GruenLichtConfigEntry) -
     await importer.async_load()
     coordinator.importer = importer
 
+    reporter = ProfileReporter(hass, client, entry)
+    coordinator.reporter = reporter
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
+
+    async def _async_profile(_now: datetime | None = None) -> None:
+        try:
+            await reporter.async_sync()
+        except GruenLichtAuthError:
+            entry.async_start_reauth(hass)
+        except GruenLichtError as err:
+            _LOGGER.warning("Haushaltsprofil nicht gemeldet: %s", err)
+        finally:
+            coordinator.async_update_listeners()
+
+    # Geräte ändern sich selten; einmal täglich aktualisieren reicht.
+    entry.async_on_unload(async_track_time_interval(hass, _async_profile, PROFILE_INTERVAL))
+    entry.async_create_background_task(hass, _async_profile(), "eeg_gruenlicht_profile")
 
     if import_enabled(entry):
 
@@ -93,10 +114,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: GruenLichtConfigEntry) 
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Beim Entfernen der Integration die Sitzung bei der EEG abmelden."""
+    """Beim Entfernen: Haushaltsprofil löschen, dann die Sitzung bei der EEG abmelden."""
     try:
         key = await hass.async_add_executor_job(DeviceKey.from_pem, entry.data[CONF_PRIVATE_KEY])
-        await _client(hass, entry, key).logout()
+        client = _client(hass, entry, key)
+        await ProfileReporter(hass, client, entry).async_remove()
+        await client.logout()
     except (GruenLichtError, KeyError, ValueError):
         _LOGGER.info("Sitzung bei der EEG konnte nicht abgemeldet werden; im Portal trennen")
     importer = StatisticsImporter(hass, None, entry.data.get(CONF_MEMBER_ID, ""), entry.entry_id)  # type: ignore[arg-type]

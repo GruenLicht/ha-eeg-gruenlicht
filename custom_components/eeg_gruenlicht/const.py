@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 DOMAIN = "eeg_gruenlicht"
-VERSION = "0.2.2"
+VERSION = "0.3.0"
 
 DEFAULT_BASE_URL = "https://api.eeg-gruenlicht.at/api"
 PORTAL_URL = "https://abrechnung.eeg-gruenlicht.at"

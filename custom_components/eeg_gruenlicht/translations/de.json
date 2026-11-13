@@ -59,6 +59,9 @@
       },
       "imported_until": {
         "name": "Viertelstundenwerte bis"
+      },
+      "profile_reported": {
+        "name": "Haushaltsprofil gemeldet"
       }
     }
   },
@@ -66,10 +69,66 @@
     "step": {
       "init": {
         "title": "Freigaben",
-        "description": "Lege fest, welche Daten zwischen der EEG und Home Assistant fließen.",
+        "description": "Lege fest, welche Daten zwischen der EEG und Home Assistant fließen. Alle Freigaben sind freiwillig und jederzeit widerrufbar.\n\n**Haushaltsprofil (Stufe 3):** Zweck: {purpose}. Sehen dürfen es: {recipients}. Übertragen werden Gerätetyp, Hersteller, Modell, Kennwerte und deine Angaben zu den Lieferverträgen – keine Messwerte, keine Seriennummern. Schaltest du die Freigabe ab, löscht die EEG die Daten.",
         "data": {
-          "import_energy": "Viertelstundenwerte der EEG in die Statistik übernehmen (Stufe 2)"
+          "import_energy": "Viertelstundenwerte der EEG in die Statistik übernehmen (Stufe 2)",
+          "report_profile": "Haushaltsprofil an die EEG melden (Stufe 3)"
         }
+      },
+      "devices": {
+        "title": "Geräte",
+        "description": "Home Assistant hat {count} Energiegeräte erkannt. Wähle aus, welche du der EEG meldest, und ergänze, was Home Assistant nicht weiß. Leere Felder werden nicht übertragen.",
+        "data": {
+          "devices": "Erkannte Geräte",
+          "pv_kwp": "Leistung der PV-Anlage",
+          "heat_pump_kw": "Elektrische Leistung der Wärmepumpe",
+          "wallbox_kw": "Ladeleistung der Wallbox",
+          "has_ev": "Ich habe ein E-Auto",
+          "notes": "Weitere Geräte oder Anmerkungen"
+        }
+      },
+      "supply": {
+        "title": "Strombezug",
+        "description": "Von wem beziehst du den Strom, den die EEG nicht deckt? Die Angabe hilft der EEG, passende Angebote zu machen.",
+        "data": {
+          "supplier": "Stromlieferant",
+          "supply_product": "Produkt / Tarif",
+          "supply_tariff_type": "Art des Tarifs"
+        }
+      },
+      "supply_product": {
+        "title": "Tarif bei {company}",
+        "description": "Wähle dein Produkt oder trage es ein.",
+        "data": {
+          "supply_product": "Produkt / Tarif"
+        }
+      },
+      "feed_in": {
+        "title": "Einspeisung",
+        "description": "Wer nimmt deinen Überschussstrom ab, der nicht in der EEG verbraucht wird? Leer lassen, wenn du keine Erzeugungsanlage hast.",
+        "data": {
+          "feed_in_buyer": "Abnehmer",
+          "feed_in_product": "Produkt / Vergütungsmodell",
+          "feed_in_tariff_type": "Art der Vergütung"
+        }
+      },
+      "feed_in_product": {
+        "title": "Vergütung bei {company}",
+        "description": "Wähle dein Produkt oder trage es ein.",
+        "data": {
+          "feed_in_product": "Produkt / Vergütungsmodell"
+        }
+      }
+    }
+  },
+  "selector": {
+    "tariff_type": {
+      "options": {
+        "fixed": "Fixpreis",
+        "indexed": "Floater / indexiert",
+        "dynamic": "Dynamisch (Stundenpreis)",
+        "other": "Sonstiges",
+        "unknown": "Weiß ich nicht"
       }
     }
   }

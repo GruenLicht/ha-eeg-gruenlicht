@@ -26,6 +26,7 @@ async def async_setup_entry(
             MeterPointsSensor(coordinator),
             LastSyncSensor(coordinator),
             ImportedUntilSensor(coordinator),
+            ProfileReportedSensor(coordinator),
         ]
     )
 
@@ -103,3 +104,20 @@ class ImportedUntilSensor(GruenLichtEntity, SensorEntity):
             "last_loaded_day": importer.last_day.isoformat() if importer.last_day else None,
             "import_running": importer.running,
         }
+
+
+class ProfileReportedSensor(GruenLichtEntity, SensorEntity):
+    """Wann das Haushaltsprofil zuletzt an die EEG gemeldet wurde (Stufe 3)."""
+
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    def __init__(self, coordinator) -> None:
+        super().__init__(coordinator, "profile_reported")
+
+    @property
+    def native_value(self) -> datetime | None:
+        reporter = self.coordinator.reporter
+        if not reporter or not reporter.reported_at:
+            return None
+        return datetime.fromisoformat(reporter.reported_at)

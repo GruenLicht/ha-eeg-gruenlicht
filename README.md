@@ -10,7 +10,7 @@ Die Teilnahme ist freiwillig. Die Verbindung geht immer von deinem Home Assistan
 | --- | --- | --- |
 | 1 | Kopplung mit dem Mitgliedskonto; Energiegemeinschaft, Mitgliedsnummer, Rolle, Zählpunkte und Verbindungsstatus als Sensoren | verfügbar |
 | 2 | Viertelstundenwerte der EEG als Langzeitstatistik: Verbrauch, Bezug aus der EEG, Bezug aus dem Netz, Erzeugung, Einspeisung in die EEG, Einspeisung ins Netz | verfügbar, abschaltbar |
-| 3 | Geräte (Wechselrichter, Batterie, Wallbox, Wärmepumpe) nach Freigabe an die EEG melden | geplant |
+| 3 | Haushaltsprofil nach Freigabe an die EEG melden: erkannte Geräte (Wechselrichter, Batterie, Wärmepumpe, Wallbox, E-Auto, Zähler), ergänzende Angaben und Lieferverträge | verfügbar, standardmäßig aus |
 | 4 | Fahrplan der EEG für die Gerätesteuerung | geplant |
 
 ## Voraussetzungen
@@ -58,16 +58,28 @@ Gut zu wissen:
 - Die Integration lädt alle 12 Stunden die letzten 30 Tage neu. Verspätete oder korrigierte Werte ersetzen so die Nullen automatisch.
 - Home Assistant speichert Statistik stündlich. Je vier Viertelstunden werden zu einer Stunde zusammengefasst.
 
+## Haushaltsprofil an die EEG melden (Stufe 3)
+
+Die EEG möchte ihren Mitgliedern individuellere Angebote machen. Dafür kannst du ihr freiwillig melden, welche Energiegeräte und welche Lieferverträge du hast.
+
+1. Öffne **Settings → Devices & services → EEG GrünLicht → Configure** und schalte **Haushaltsprofil an die EEG melden** ein.
+2. **Geräte:** Home Assistant zeigt die erkannten Geräte. Wähle aus, welche du meldest, und ergänze, was Home Assistant nicht weiß, zum Beispiel die Leistung der PV-Anlage.
+3. **Strombezug:** Lieferant, Produkt und Art des Tarifs.
+4. **Einspeisung:** Wer deinen Überschussstrom abnimmt, falls du eine Erzeugungsanlage hast.
+
+Übertragen werden nur Gerätetyp, Hersteller, Modell, Kennwerte wie die Batteriekapazität und deine Angaben im Dialog. Messwerte und Seriennummern werden nie übertragen. Das Profil wird einmal täglich aktualisiert. Sehen dürfen es der Vorstand der EEG und Entwickler, soweit sie ein konkretes Angebot umsetzen.
+
 ## Freigaben ändern und Verbindung trennen
 
-- Unter **Settings → Devices & services → EEG GrünLicht → Configure** schaltest du den Import der Viertelstundenwerte ein oder aus.
-- Entfernst du die Integration, meldet Home Assistant die Verbindung bei der EEG ab.
+- Unter **Settings → Devices & services → EEG GrünLicht → Configure** schaltest du den Import der Viertelstundenwerte und die Meldung des Haushaltsprofils ein oder aus. Schaltest du die Meldung ab, löscht die EEG dein Profil.
+- Entfernst du die Integration, löscht Home Assistant zuerst dein Haushaltsprofil bei der EEG und meldet dann die Verbindung ab.
 - Im Mitgliederportal siehst du die Verbindung „Home Assistant“ in deiner Geräteliste und kannst sie dort jederzeit trennen. Home Assistant fragt dann nach einem neuen Kurzcode.
 
 ## Datenschutz
 
 - Home Assistant holt nur die Daten deines eigenen Mitgliedskontos. Sie bleiben in deinem Home Assistant.
 - An die EEG geht in Stufe 1 und 2 nur, was für die Verbindung nötig ist: ein eigener Geräteschlüssel, die Gerätebezeichnung „Home Assistant (EEG GrünLicht \<Version\>)“ und der Zeitpunkt der letzten Abfrage. Die EEG sieht dadurch, welche Mitglieder die Integration verwenden.
+- In Stufe 3 kommt nach deiner Freigabe das Haushaltsprofil dazu (siehe oben).
 - Die Verbindung ist an einen Schlüssel gebunden, der nur in deinem Home Assistant liegt. Ein abgefangener Zugangstoken allein nützt einem Angreifer nichts.
 
 ## Entwicklung
