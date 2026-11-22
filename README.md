@@ -67,18 +67,20 @@ Die EEG möchte ihren Mitgliedern individuellere Angebote machen. Dafür kannst 
 3. **Strombezug:** Lieferant, Produkt und Art des Tarifs.
 4. **Einspeisung:** Wer deinen Überschussstrom abnimmt, falls du eine Erzeugungsanlage hast.
 
-Übertragen werden nur Gerätetyp, Hersteller, Modell, Kennwerte wie die Batteriekapazität und deine Angaben im Dialog. Messwerte und Seriennummern werden nie übertragen. Das Profil wird einmal täglich aktualisiert. Sehen dürfen es der Vorstand der EEG und Entwickler, soweit sie ein konkretes Angebot umsetzen.
+Übertragen werden je Gerät Gerätetyp, Hersteller, Modell, der Name der Home-Assistant-Integration, über die es eingebunden ist (zum Beispiel „fronius“), und Kennwerte wie die Batteriekapazität. Dazu kommen deine Angaben im Dialog, also die Lieferverträge und das Feld „Weitere Geräte oder Anmerkungen“, sowie der Zeitpunkt deiner Freigabe, die Version der Integration und der Zweck der Meldung. Messwerte, die Gerätenamen aus deinem Home Assistant und Seriennummern werden nie übertragen. Das Profil wird einmal täglich aktualisiert. Sehen dürfen es der Vorstand der EEG und Berechtigte, also vom Vorstand beauftragte Entwickler, soweit sie ein konkretes Angebot umsetzen.
 
 ## Freigaben ändern und Verbindung trennen
 
 - Unter **Settings → Devices & services → EEG GrünLicht → Configure** schaltest du den Import der Viertelstundenwerte und die Meldung des Haushaltsprofils ein oder aus. Schaltest du die Meldung ab, löscht die EEG dein Profil.
 - Entfernst du die Integration, löscht Home Assistant zuerst dein Haushaltsprofil bei der EEG und meldet dann die Verbindung ab.
-- Im Mitgliederportal siehst du die Verbindung „Home Assistant“ in deiner Geräteliste und kannst sie dort jederzeit trennen. Home Assistant fragt dann nach einem neuen Kurzcode.
+- Im Mitgliederportal siehst du die Verbindung „Home Assistant“ in deiner Geräteliste und kannst sie dort jederzeit trennen. Dabei löscht die EEG auch ein gemeldetes Haushaltsprofil. Home Assistant fragt dann nach einem neuen Kurzcode.
+- Erreicht Home Assistant die EEG beim Entfernen der Integration nicht, zum Beispiel ohne Internetverbindung, bleibt ein gemeldetes Haushaltsprofil vorerst bei der EEG gespeichert. Die EEG löscht es automatisch, wenn sich Home Assistant 30 Tage lang nicht mehr gemeldet hat. Sofort gelöscht wird es, wenn du die Verbindung im Mitgliederportal trennst oder an office@eeg-gruenlicht.at schreibst.
 
 ## Datenschutz
 
 - Home Assistant holt nur die Daten deines eigenen Mitgliedskontos. Sie bleiben in deinem Home Assistant.
-- An die EEG geht in Stufe 1 und 2 nur, was für die Verbindung nötig ist: ein eigener Geräteschlüssel, die Gerätebezeichnung „Home Assistant (EEG GrünLicht \<Version\>)“ und der Zeitpunkt der letzten Abfrage. Die EEG sieht dadurch, welche Mitglieder die Integration verwenden.
+- An die EEG geht in Stufe 1 und 2, was für die Verbindung nötig ist: ein eigener Geräteschlüssel, die Gerätebezeichnung „Home Assistant (EEG GrünLicht \<Version\>)“ mit der Version zum Zeitpunkt der Kopplung und der Zeitpunkt der letzten Abfrage.
+- Die Verwaltung der EEG, also der Vorstand und von ihm mit der Verwaltung beauftragte Personen, sieht in der Mitgliederliste je Mitglied: ob eine Verbindung besteht und ob sie aktiv ist (letzter Kontakt vor weniger als 2 Stunden), die Version aus der Gerätebezeichnung, seit wann die Verbindung besteht, den letzten Kontakt und, wenn du das Haushaltsprofil meldest, das Datum der letzten Meldung. Den Inhalt des Haushaltsprofils zeigt die Mitgliederliste nicht.
 - In Stufe 3 kommt nach deiner Freigabe das Haushaltsprofil dazu (siehe oben).
 - Die Verbindung ist an einen Schlüssel gebunden, der nur in deinem Home Assistant liegt. Ein abgefangener Zugangstoken allein nützt einem Angreifer nichts.
 

@@ -69,7 +69,7 @@
     "step": {
       "init": {
         "title": "Permissions",
-        "description": "Choose which data flows between the energy community and Home Assistant. Every permission is voluntary and can be withdrawn at any time.\n\n**Household profile (stage 3):** Purpose: {purpose}. Who may see it: {recipients}. Sent are device type, manufacturer, model, key figures and your supply contract details – no meter readings, no serial numbers. If you switch this off, the community deletes the data.",
+        "description": "Choose which data flows between the energy community and Home Assistant. Every permission is voluntary and can be withdrawn at any time.\n\n**Household profile (stage 3):** Purpose: {purpose}. Who may see it: {recipients}. Sent are, per device, type, manufacturer, model, the Home Assistant integration it belongs to and key figures, plus your supply contract details and what you enter under “Other devices or notes”, the time of your consent, the integration version and the purpose – no meter readings, no device names, no serial numbers. If you switch this off, the community deletes the data.",
         "data": {
           "import_energy": "Import the community's quarter-hour values into statistics (stage 2)",
           "report_profile": "Report the household profile to the community (stage 3)"

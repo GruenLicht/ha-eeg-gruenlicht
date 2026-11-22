@@ -26,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # Zweck und Empfänger — stehen auch im Freigabe-Dialog und gehen mit der Meldung mit.
 PURPOSE = "individuellere Angebote der EEG"
-RECIPIENTS = "Vorstand der EEG; Entwickler nur, soweit sie ein konkretes Angebot umsetzen"
+RECIPIENTS = "Vorstand der EEG und Berechtigte"
 
 # Gerätetypen
 INVERTER = "inverter"
