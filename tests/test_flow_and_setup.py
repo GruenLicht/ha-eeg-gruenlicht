@@ -44,6 +44,7 @@ def _mock_pairing(aioclient_mock, status="confirmed"):
     aioclient_mock.get(f"{BASE}/app/pair/status/p1", json=body)
     # Stufe 2: noch keine Viertelstundenwerte vorhanden.
     aioclient_mock.get(f"{BASE}/energy", json={"buckets": [], "coverage": {}})
+    aioclient_mock.put(f"{BASE}/home-assistant/status", status=204)
 
 
 async def _run_flow(hass: HomeAssistant, code="k7f2-9qrm"):

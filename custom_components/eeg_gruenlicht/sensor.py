@@ -27,6 +27,7 @@ async def async_setup_entry(
             LastSyncSensor(coordinator),
             ImportedUntilSensor(coordinator),
             ProfileReportedSensor(coordinator),
+            MeineAngabenReportedSensor(coordinator),
         ]
     )
 
@@ -118,6 +119,23 @@ class ProfileReportedSensor(GruenLichtEntity, SensorEntity):
     @property
     def native_value(self) -> datetime | None:
         reporter = self.coordinator.reporter
+        if not reporter or not reporter.reported_at:
+            return None
+        return datetime.fromisoformat(reporter.reported_at)
+
+
+class MeineAngabenReportedSensor(GruenLichtEntity, SensorEntity):
+    """Wann die Geräte zuletzt an „Meine Angaben" gemeldet wurden."""
+
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    def __init__(self, coordinator) -> None:
+        super().__init__(coordinator, "meine_angaben_reported")
+
+    @property
+    def native_value(self) -> datetime | None:
+        reporter = self.coordinator.meine_angaben
         if not reporter or not reporter.reported_at:
             return None
         return datetime.fromisoformat(reporter.reported_at)

@@ -3,6 +3,8 @@
 Stufe 1: Kopplung mit dem Mitgliedskonto, Mitgliedsdaten als Sensoren.
 Stufe 2: Viertelstundenwerte der EEG als Langzeitstatistik (abschaltbar).
 Stufe 3: Haushaltsprofil (Geräte, Lieferverträge) an die EEG — nur nach Freigabe.
+Ab 0.4.0: Geräte in „Meine Angaben" (eigene Freigabe) und Statusmeldung
+(Version, welche Freigaben an sind) für die Mitgliederverwaltung.
 """
 
 from __future__ import annotations
@@ -24,9 +26,11 @@ from .const import (
     CONF_PRIVATE_KEY,
     CONF_SESSION_TOKEN,
     IMPORT_INTERVAL,
+    VERSION,
 )
 from .coordinator import GruenLichtCoordinator
-from .profile import ProfileReporter
+from .meine_angaben import MeineAngabenReporter
+from .profile import OPT_MEINE_ANGABEN, OPT_REPORT, ProfileReporter
 from .statistics import StatisticsImporter
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,6 +55,17 @@ def import_enabled(entry: ConfigEntry) -> bool:
     return bool(entry.options.get(CONF_IMPORT_ENERGY, True))
 
 
+def status_payload(entry: ConfigEntry) -> dict[str, object]:
+    """Was die Verwaltung über diese Instanz sieht: Version und Freigaben."""
+    return {
+        "pluginVersion": VERSION,
+        "importEnergy": import_enabled(entry),
+        "reportProfile": bool(entry.options.get(OPT_REPORT)),
+        "meineAngaben": bool(entry.options.get(OPT_MEINE_ANGABEN)),
+        "controllable": False,
+    }
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: GruenLichtConfigEntry) -> bool:
     key = await hass.async_add_executor_job(DeviceKey.from_pem, entry.data[CONF_PRIVATE_KEY])
     client = _client(hass, entry, key)
@@ -64,19 +79,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: GruenLichtConfigEntry) -
 
     reporter = ProfileReporter(hass, client, entry)
     coordinator.reporter = reporter
+    meine_angaben = MeineAngabenReporter(hass, client, entry)
+    coordinator.meine_angaben = meine_angaben
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
 
     async def _async_profile(_now: datetime | None = None) -> None:
         try:
-            await reporter.async_sync()
+            await client.put_status(status_payload(entry))
         except GruenLichtAuthError:
             entry.async_start_reauth(hass)
+            return
         except GruenLichtError as err:
-            _LOGGER.warning("Haushaltsprofil nicht gemeldet: %s", err)
-        finally:
-            coordinator.async_update_listeners()
+            _LOGGER.debug("Status nicht gemeldet: %s", err)
+        for name, job in (("Haushaltsprofil", reporter), ("Meine Angaben", meine_angaben)):
+            try:
+                await job.async_sync()
+            except GruenLichtAuthError:
+                entry.async_start_reauth(hass)
+                break
+            except GruenLichtError as err:
+                _LOGGER.warning("%s nicht gemeldet: %s", name, err)
+        coordinator.async_update_listeners()
 
     # Geräte ändern sich selten; einmal täglich aktualisieren reicht.
     entry.async_on_unload(async_track_time_interval(hass, _async_profile, PROFILE_INTERVAL))
@@ -114,11 +139,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: GruenLichtConfigEntry) 
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Beim Entfernen: Haushaltsprofil löschen, dann die Sitzung bei der EEG abmelden."""
+    """Beim Entfernen: Haushaltsprofil löschen, „Meine Angaben" beenden, Sitzung abmelden."""
     try:
         key = await hass.async_add_executor_job(DeviceKey.from_pem, entry.data[CONF_PRIVATE_KEY])
         client = _client(hass, entry, key)
         await ProfileReporter(hass, client, entry).async_remove()
+        await MeineAngabenReporter(hass, client, entry).async_remove()
         await client.logout()
     except (GruenLichtError, KeyError, ValueError):
         _LOGGER.info("Sitzung bei der EEG konnte nicht abgemeldet werden; im Portal trennen")

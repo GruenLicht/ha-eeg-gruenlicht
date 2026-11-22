@@ -62,6 +62,9 @@
       },
       "profile_reported": {
         "name": "Household profile reported"
+      },
+      "meine_angaben_reported": {
+        "name": "Meine Angaben reported"
       }
     }
   },
@@ -69,18 +72,20 @@
     "step": {
       "init": {
         "title": "Permissions",
-        "description": "Choose which data flows between the energy community and Home Assistant. Every permission is voluntary and can be withdrawn at any time.\n\n**Household profile (stage 3):** Purpose: {purpose}. Who may see it: {recipients}. Sent are, per device, type, manufacturer, model, the Home Assistant integration it belongs to and key figures, plus your supply contract details and what you enter under “Other devices or notes”, the time of your consent, the integration version and the purpose – no meter readings, no device names, no serial numbers. If you switch this off, the community deletes the data.",
+        "description": "Choose which data flows between the energy community and Home Assistant. Every permission is voluntary and can be withdrawn at any time.\n\n**Household profile (stage 3):** Purpose: {purpose}. Who may see it: {recipients}. Sent are, per device, type, manufacturer, model, the Home Assistant integration it belongs to and key figures, plus your supply contract details and what you enter under “Other devices or notes”, the time of your consent, the integration version and the purpose – no meter readings, no device names, no serial numbers. If you switch this off, the community deletes the data.\n\n**Devices in “Meine Angaben”:** Records in your “Meine Angaben” profile (member portal and app) which devices you have – PV system, battery, heat pump, electric vehicle – with power or capacity, marked “from Home Assistant”. What you entered there yourself stays; if Home Assistant differs, you see a suggestion you can accept. If you switch this off, the values stay and are no longer changed; open suggestions disappear.\n\nThe community's administration sees which permissions are switched on and which version of the integration is running.",
         "data": {
           "import_energy": "Import the community's quarter-hour values into statistics (stage 2)",
-          "report_profile": "Report the household profile to the community (stage 3)"
+          "report_profile": "Report the household profile to the community (stage 3)",
+          "meine_angaben": "Enter devices in “Meine Angaben”"
         }
       },
       "devices": {
         "title": "Devices",
-        "description": "Home Assistant detected {count} energy devices. Choose which ones to report and add what Home Assistant does not know. Empty fields are not sent.",
+        "description": "Home Assistant detected {count} energy devices. Choose which ones to report and add what Home Assistant does not know. Empty fields are not sent. “Other devices or notes” only go into the household profile.",
         "data": {
           "devices": "Detected devices",
           "pv_kwp": "PV system power",
+          "battery_kwh": "Battery capacity",
           "heat_pump_kw": "Heat pump electrical power",
           "wallbox_kw": "Wallbox charging power",
           "has_ev": "I have an electric vehicle",

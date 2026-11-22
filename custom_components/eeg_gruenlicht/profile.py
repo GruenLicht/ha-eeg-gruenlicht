@@ -201,6 +201,7 @@ def detect_devices(hass: HomeAssistant) -> list[DetectedDevice]:
 OPT_REPORT = "report_profile"
 OPT_DEVICES = "devices"
 OPT_PV_KWP = "pv_kwp"
+OPT_BATTERY_KWH = "battery_kwh"
 OPT_HEAT_PUMP_KW = "heat_pump_kw"
 OPT_WALLBOX_KW = "wallbox_kw"
 OPT_HAS_EV = "has_ev"
@@ -212,6 +213,8 @@ OPT_FEED_IN_PRODUCT = "feed_in_product"
 OPT_FEED_IN_TARIFF = "feed_in_tariff_type"
 OPT_NOTES = "notes"
 OPT_CONSENT_AT = "profile_consent_at"
+# Dritte Freigabe (ab 0.4.0), unabhängig vom Haushaltsprofil: siehe meine_angaben.py
+OPT_MEINE_ANGABEN = "meine_angaben"
 
 TARIFF_TYPES = ["fixed", "indexed", "dynamic", "other", "unknown"]
 
@@ -235,6 +238,7 @@ def build_payload(hass: HomeAssistant, options: dict[str, Any]) -> dict[str, Any
             )
 
     add_attr(INVERTER, "pvPowerKwp", options.get(OPT_PV_KWP))
+    add_attr(BATTERY, "capacityKwh", options.get(OPT_BATTERY_KWH))
     add_attr(HEAT_PUMP, "powerKw", options.get(OPT_HEAT_PUMP_KW))
     add_attr(WALLBOX, "chargingPowerKw", options.get(OPT_WALLBOX_KW))
     if options.get(OPT_HAS_EV) and not any(d.type == EV for d in devices):

@@ -41,6 +41,7 @@ from .api import (
     normalize_code,
 )
 from .profile import (
+    OPT_BATTERY_KWH,
     OPT_BUYER,
     OPT_CONSENT_AT,
     OPT_DEVICES,
@@ -48,6 +49,7 @@ from .profile import (
     OPT_FEED_IN_TARIFF,
     OPT_HAS_EV,
     OPT_HEAT_PUMP_KW,
+    OPT_MEINE_ANGABEN,
     OPT_NOTES,
     OPT_PV_KWP,
     OPT_REPORT,
@@ -246,7 +248,7 @@ TYPE_LABELS = {
            "wallbox": "Wallbox", "electric_vehicle": "Electric vehicle", "meter": "Meter"},
 }
 
-DEVICE_FIELDS = (OPT_DEVICES, OPT_PV_KWP, OPT_HEAT_PUMP_KW, OPT_WALLBOX_KW, OPT_HAS_EV, OPT_NOTES)
+DEVICE_FIELDS = (OPT_DEVICES, OPT_PV_KWP, OPT_BATTERY_KWH, OPT_HEAT_PUMP_KW, OPT_WALLBOX_KW, OPT_HAS_EV, OPT_NOTES)
 SUPPLY_FIELDS = (OPT_SUPPLIER, OPT_SUPPLY_PRODUCT, OPT_SUPPLY_TARIFF)
 FEED_IN_FIELDS = (OPT_BUYER, OPT_FEED_IN_PRODUCT, OPT_FEED_IN_TARIFF)
 
@@ -289,7 +291,7 @@ def _catalog_tariff(items: list[dict[str, Any]] | None, company: str | None, pro
 
 
 class GruenLichtOptionsFlow(OptionsFlow):
-    """Freigaben je Stufe; Stufe 3 mit Geräteauswahl und Lieferverträgen."""
+    """Freigaben; Haushaltsprofil und „Meine Angaben" teilen sich die Geräteauswahl."""
 
     def __init__(self) -> None:
         self._data: dict[str, Any] = {}
@@ -330,7 +332,7 @@ class GruenLichtOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         if user_input is not None:
             self._data.update(user_input)
-            if user_input.get(OPT_REPORT):
+            if user_input.get(OPT_REPORT) or user_input.get(OPT_MEINE_ANGABEN):
                 return await self.async_step_devices()
             return self._finish()
         opts = self._opts
@@ -340,6 +342,7 @@ class GruenLichtOptionsFlow(OptionsFlow):
                 {
                     vol.Required(CONF_IMPORT_ENERGY, default=opts.get(CONF_IMPORT_ENERGY, True)): bool,
                     vol.Required(OPT_REPORT, default=bool(opts.get(OPT_REPORT, False))): bool,
+                    vol.Required(OPT_MEINE_ANGABEN, default=bool(opts.get(OPT_MEINE_ANGABEN, False))): bool,
                 }
             ),
             description_placeholders={"purpose": PURPOSE, "recipients": RECIPIENTS},
@@ -352,7 +355,10 @@ class GruenLichtOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         if user_input is not None:
             self._take(DEVICE_FIELDS, user_input)
-            return await self.async_step_supply()
+            # Lieferverträge gehören nur zum Haushaltsprofil.
+            if self._opts.get(OPT_REPORT):
+                return await self.async_step_supply()
+            return self._finish()
 
         opts = self._opts
         lang = "de" if self.hass.config.language.startswith("de") else "en"
@@ -371,9 +377,11 @@ class GruenLichtOptionsFlow(OptionsFlow):
                     mode=SelectSelectorMode.LIST,
                 )
             )
-        schema[vol.Optional(OPT_PV_KWP, description=_suggested(opts.get(OPT_PV_KWP)))] = _number("kWp", 1000)
-        schema[vol.Optional(OPT_HEAT_PUMP_KW, description=_suggested(opts.get(OPT_HEAT_PUMP_KW)))] = _number("kW", 100)
-        schema[vol.Optional(OPT_WALLBOX_KW, description=_suggested(opts.get(OPT_WALLBOX_KW)))] = _number("kW", 50)
+        # Obergrenzen wie in „Meine Angaben" (eeg-stack weist größere Werte ab).
+        schema[vol.Optional(OPT_PV_KWP, description=_suggested(opts.get(OPT_PV_KWP)))] = _number("kWp", 100)
+        schema[vol.Optional(OPT_BATTERY_KWH, description=_suggested(opts.get(OPT_BATTERY_KWH)))] = _number("kWh", 200)
+        schema[vol.Optional(OPT_HEAT_PUMP_KW, description=_suggested(opts.get(OPT_HEAT_PUMP_KW)))] = _number("kW", 20)
+        schema[vol.Optional(OPT_WALLBOX_KW, description=_suggested(opts.get(OPT_WALLBOX_KW)))] = _number("kW", 22)
         schema[vol.Optional(OPT_HAS_EV, default=bool(opts.get(OPT_HAS_EV, False)))] = bool
         schema[vol.Optional(OPT_NOTES, description=_suggested(opts.get(OPT_NOTES)))] = TextSelector(
             TextSelectorConfig(multiline=True)

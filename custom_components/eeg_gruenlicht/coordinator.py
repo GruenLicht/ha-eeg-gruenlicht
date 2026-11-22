@@ -31,6 +31,7 @@ class GruenLichtCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.client = client
         self.importer = None  # StatisticsImporter, gesetzt in async_setup_entry
         self.reporter = None  # ProfileReporter (Stufe 3)
+        self.meine_angaben = None  # MeineAngabenReporter
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:

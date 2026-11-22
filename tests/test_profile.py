@@ -69,6 +69,7 @@ async def _setup(hass: HomeAssistant, aioclient_mock) -> MockConfigEntry:
     aioclient_mock.get(f"{BASE}/contract-catalog", json=CATALOG)
     aioclient_mock.put(f"{BASE}/home-profile", status=204)
     aioclient_mock.delete(f"{BASE}/home-profile", status=204)
+    aioclient_mock.put(f"{BASE}/home-assistant/status", status=204)
     entry = MockConfigEntry(
         domain=DOMAIN,
         unique_id="M-1",

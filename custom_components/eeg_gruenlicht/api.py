@@ -242,6 +242,35 @@ class GruenLichtClient:
         if status not in (200, 204, 404):
             raise GruenLichtConnectionError(f"HTTP {status}")
 
+    async def put_status(self, status: dict[str, Any]) -> bool:
+        """PUT /home-assistant/status — Version und Freigaben für die Verwaltung.
+
+        Optional: Eine ältere API ohne diesen Endpunkt (404) wird ignoriert.
+        """
+        status_code, _ = await self._request("PUT", "/home-assistant/status", status)
+        if status_code == 401:
+            raise GruenLichtAuthError
+        return status_code in (200, 204)
+
+    async def put_meine_angaben(self, fields: dict[str, Any]) -> dict[str, Any] | None:
+        """PUT /home-assistant/meine-angaben — Geräte für „Meine Angaben" melden."""
+        status, data = await self._request("PUT", "/home-assistant/meine-angaben", {"fields": fields})
+        if status in (401, 403):
+            raise GruenLichtAuthError
+        if status == 422:
+            raise GruenLichtError(f"Meine Angaben abgewiesen: {(data or {}).get('field')}")
+        if status != 200:
+            raise GruenLichtConnectionError(f"HTTP {status}")
+        return data if isinstance(data, dict) else None
+
+    async def delete_meine_angaben(self) -> None:
+        """DELETE /home-assistant/meine-angaben — Freigabe beendet."""
+        status, _ = await self._request("DELETE", "/home-assistant/meine-angaben")
+        if status in (401, 403):
+            raise GruenLichtAuthError
+        if status not in (200, 204, 404):
+            raise GruenLichtConnectionError(f"HTTP {status}")
+
     async def contract_catalog(self) -> dict[str, Any] | None:
         """GET /contract-catalog — Lieferanten, Abnehmer und Produkte zur Auswahl.
 

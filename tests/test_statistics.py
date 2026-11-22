@@ -62,6 +62,7 @@ async def test_import_backfills_and_is_idempotent(hass: HomeAssistant, aioclient
     )
     aioclient_mock.get(f"{BASE}/energy", json={"buckets": [], "coverage": coverage})
     aioclient_mock.get(f"{BASE}/me", json=MEMBER)
+    aioclient_mock.put(f"{BASE}/home-assistant/status", status=204)
 
     key = DeviceKey.generate()
     entry = MockConfigEntry(

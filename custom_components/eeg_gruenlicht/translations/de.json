@@ -62,6 +62,9 @@
       },
       "profile_reported": {
         "name": "Haushaltsprofil gemeldet"
+      },
+      "meine_angaben_reported": {
+        "name": "Meine Angaben gemeldet"
       }
     }
   },
@@ -69,18 +72,20 @@
     "step": {
       "init": {
         "title": "Freigaben",
-        "description": "Lege fest, welche Daten zwischen der EEG und Home Assistant fließen. Alle Freigaben sind freiwillig und jederzeit widerrufbar.\n\n**Haushaltsprofil (Stufe 3):** Zweck: {purpose}. Sehen dürfen es: {recipients}. Übertragen werden je Gerät Typ, Hersteller, Modell, die zuständige Home-Assistant-Integration und Kennwerte, dazu deine Angaben zu den Lieferverträgen und unter „Weitere Geräte oder Anmerkungen“, der Zeitpunkt deiner Freigabe, die Version der Integration und der Zweck – keine Messwerte, keine Gerätenamen, keine Seriennummern. Schaltest du die Freigabe ab, löscht die EEG die Daten.",
+        "description": "Lege fest, welche Daten zwischen der EEG und Home Assistant fließen. Alle Freigaben sind freiwillig und jederzeit widerrufbar.\n\n**Haushaltsprofil (Stufe 3):** Zweck: {purpose}. Sehen dürfen es: {recipients}. Übertragen werden je Gerät Typ, Hersteller, Modell, die zuständige Home-Assistant-Integration und Kennwerte, dazu deine Angaben zu den Lieferverträgen und unter „Weitere Geräte oder Anmerkungen“, der Zeitpunkt deiner Freigabe, die Version der Integration und der Zweck – keine Messwerte, keine Gerätenamen, keine Seriennummern. Schaltest du die Freigabe ab, löscht die EEG die Daten.\n\n**Geräte in „Meine Angaben“:** Trägt in dein Profil „Meine Angaben“ (Mitgliederportal und App) ein, welche Geräte du hast – PV-Anlage, Batteriespeicher, Wärmepumpe, E-Auto – samt Leistung bzw. Kapazität, mit der Herkunft „aus Home Assistant“. Was du dort selbst eingetragen hast, bleibt; weicht Home Assistant ab, siehst du einen Vorschlag zum Übernehmen. Schaltest du die Freigabe ab, bleiben die Werte stehen und werden nicht mehr geändert; offene Vorschläge verschwinden.\n\nDie Verwaltung der EEG sieht, welche Freigaben eingeschaltet sind und welche Version der Integration läuft.",
         "data": {
           "import_energy": "Viertelstundenwerte der EEG in die Statistik übernehmen (Stufe 2)",
-          "report_profile": "Haushaltsprofil an die EEG melden (Stufe 3)"
+          "report_profile": "Haushaltsprofil an die EEG melden (Stufe 3)",
+          "meine_angaben": "Geräte in „Meine Angaben“ eintragen"
         }
       },
       "devices": {
         "title": "Geräte",
-        "description": "Home Assistant hat {count} Energiegeräte erkannt. Wähle aus, welche du der EEG meldest, und ergänze, was Home Assistant nicht weiß. Leere Felder werden nicht übertragen.",
+        "description": "Home Assistant hat {count} Energiegeräte erkannt. Wähle aus, welche du der EEG meldest, und ergänze, was Home Assistant nicht weiß. Leere Felder werden nicht übertragen. „Weitere Geräte oder Anmerkungen“ gehen nur ins Haushaltsprofil.",
         "data": {
           "devices": "Erkannte Geräte",
           "pv_kwp": "Leistung der PV-Anlage",
+          "battery_kwh": "Kapazität des Batteriespeichers",
           "heat_pump_kw": "Elektrische Leistung der Wärmepumpe",
           "wallbox_kw": "Ladeleistung der Wallbox",
           "has_ev": "Ich habe ein E-Auto",
